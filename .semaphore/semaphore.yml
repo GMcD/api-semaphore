@@ -38,7 +38,11 @@ blocks:
       jobs:
         - name: go test
           commands:
-            - go test ./...
+            - gotestsum --junitfile junit.xml ./...
+      epilogue:
+        always:
+          commands:
+            - test-results publish junit.xml
   - name: Build
     task:
       env_vars:
