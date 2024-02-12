@@ -34,9 +34,7 @@ blocks:
           - checkout
           - 'cache restore '
           - go mod vendor
-          - 'echo ${GOFLAGS}'
-          - 'echo ${HOME}'
-          - 'ls -ls ${HOME}/go/bin'
+          - 'ls -lsR ${HOME}'
       jobs:
         - name: go test
           commands:
