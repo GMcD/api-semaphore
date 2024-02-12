@@ -31,15 +31,16 @@ blocks:
         commands:
           - sem-version go 1.19
           - sem-service start postgres 15
-          - apt install gotestsum
           - checkout
           - 'cache restore '
           - go mod vendor
           - 'echo ${GOFLAGS}'
+          - 'echo ${HOME}'
+          - 'ls -ls ${HOME}/go/bin'
       jobs:
         - name: go test
           commands:
-            - gotestsum --junitfile junit.xml ./...
+            - '${HOME}/go/bin/gotestsum --junitfile junit.xml ./...'
       epilogue:
         always:
           commands:
