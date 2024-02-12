@@ -64,3 +64,9 @@ blocks:
           commands:
             - go build -v -o dash-api.bin
             - artifact push project --force dash-api.bin
+after_pipeline:
+  task:
+    jobs:
+      - name: Collect Tests
+        commands:
+          - test-results gen-pipeline-report
