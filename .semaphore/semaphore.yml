@@ -30,7 +30,8 @@ blocks:
       prologue:
         commands:
           - sem-version go 1.19
-          - sem-service start postgres
+          - sem-service start postgres 15
+          - apt install gotestsum
           - checkout
           - 'cache restore '
           - go mod vendor
