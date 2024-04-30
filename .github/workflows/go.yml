@@ -51,3 +51,19 @@ jobs:
           PGPASSWORD: postgres
           # DATABASE_DSN: "user=postgres host=localhost password=postgres port=5432 database=postgres sslmode=disable"
           # POSTGRES_URL: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
+
+  hello_gary:
+    runs-on: ubuntu-latest
+    name: A job to say hello
+    steps:
+      # To use this repository's private action, you must check out the repository
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Hello Gary Step
+        uses: ./.github/actions # Uses an action in the root directory
+        id: container
+        with:
+          who-to-greet: "Gary MacDonald"
+      # Use the output from the `hello` step
+      - name: Get the output time
+        run: echo "The time was ${{ steps.container.outputs.time }}"
