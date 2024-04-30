@@ -30,11 +30,12 @@ blocks:
       prologue:
         commands:
           - sem-version go 1.19
-          - sem-service start postgres
+          - sem-service start postgres 15
+          - sudo apt-get update
+          - sudo apt-get -y install gotestsum
           - checkout
           - 'cache restore '
           - go mod vendor
-          - 'echo ${GOFLAGS}'
       jobs:
         - name: go test
           commands:
@@ -63,3 +64,9 @@ blocks:
           commands:
             - go build -v -o dash-api.bin
             - artifact push project --force dash-api.bin
+after_pipeline:
+  task:
+    jobs:
+      - name: Collect Tests
+        commands:
+          - test-results gen-pipeline-report
