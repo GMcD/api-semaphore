@@ -126,7 +126,7 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	var p product
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid resquest payload")
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
 		return
 	}
 	defer r.Body.Close()
