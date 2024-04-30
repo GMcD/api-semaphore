@@ -54,16 +54,16 @@ jobs:
 
   hello_gary:
     runs-on: ubuntu-latest
-    name: A job to say hello
+    name: Say Hello Job
     steps:
-      # To use this repository's private action, you must check out the repository
+      # Check out the repository to use action
       - name: Checkout
         uses: actions/checkout@v4
       - name: Hello Gary Step
-        uses: ./.github/actions # Uses an action in the root directory
+        uses: ./.github/actions # Uses an action in the git hub actions directory
         id: container
         with:
           who-to-greet: "Gary MacDonald"
       # Use the output from the `hello` step
-      - name: Get the output time
+      - name: Gary Step output
         run: echo "The time was ${{ steps.container.outputs.time }}"
