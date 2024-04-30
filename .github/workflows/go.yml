@@ -21,7 +21,9 @@ jobs:
         image: postgres
         # Provide the password for postgres
         env:
-          POSTGRES_PASSWORD: In!ferno666
+          POSTGRES_DB: postgres
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -46,4 +48,5 @@ jobs:
       - name: Test
         run: go test -v ./...
         env:
-          DATABASE_DSN: "user=postgres host=localhost password=postgres port=5432 database=postgres sslmode=disable"
+          # DATABASE_DSN: "user=postgres host=localhost password=postgres port=5432 database=postgres sslmode=disable"
+          POSTGRES_URL: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
