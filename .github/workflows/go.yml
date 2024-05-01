@@ -52,6 +52,12 @@ jobs:
           POSTGRES_HOST: localhost
           PGPASSWORD: postgres
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: workspace_artifacts
+          path: ${{ github.workspace }}
+
       # Use the output from the `container` step
       - name: Container Build Output
         run: echo "The time was ${{ steps.container.outputs.time }}"
