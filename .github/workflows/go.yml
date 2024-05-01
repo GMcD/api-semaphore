@@ -15,23 +15,16 @@ jobs:
 
     # Service containers to run with `container-job`
     services:
-      # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
         env:
-          # POSTGRES_DB: postgres
-          # POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps tcp port 5432 on service container to the host
           - 5432:5432
 
     steps:
@@ -49,8 +42,6 @@ jobs:
         run: go test -v ./...
         env:
           PGPASSWORD: postgres
-          # DATABASE_DSN: "user=postgres host=localhost password=postgres port=5432 database=postgres sslmode=disable"
-          # POSTGRES_URL: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
 
   test_container_build:
     runs-on: ubuntu-latest
@@ -60,12 +51,8 @@ jobs:
     services:
       # Label used to access the service container
       postgres:
-        # Docker Hub image
         image: postgres
-        # Provide the password for postgres
         env:
-          # POSTGRES_DB: postgres
-          # POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-
@@ -74,18 +61,21 @@ jobs:
           --health-timeout 5s
           --health-retries 5
         ports:
-          # Maps tcp port 5432 on service container to the host
           - 5432:5432
 
     steps:
       # Check out the repository to use action
       - name: Checkout
         uses: actions/checkout@v4
+
       - name: Test Go Module Container
         uses: ./.github/actions # Uses an action in the .github actions directory
         id: container
         with:
           who-to-greet: "Gary MacDonald"
+
       # Use the output from the `container` step
       - name: Container Build Output
         run: echo "The time was ${{ steps.container.outputs.time }}"
+        env:
+          PGPASSWORD: postgres
