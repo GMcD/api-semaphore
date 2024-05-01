@@ -49,6 +49,7 @@ jobs:
         with:
           who-to-greet: "Gary MacDonald"
         env:
+          POSTGRES_HOST: localhost
           PGPASSWORD: postgres
 
       # Use the output from the `container` step
