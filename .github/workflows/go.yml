@@ -68,13 +68,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set PgPass
+        run: echo PGPASSWORD=postgres >> $GITHUB_ENV
+
       - name: Test Go Module Container
         uses: ./.github/actions # Uses an action in the .github actions directory
         id: container
         with:
           who-to-greet: "Gary MacDonald"
-        env:
-          PGPASSWORD: postgres
 
       # Use the output from the `container` step
       - name: Container Build Output
