@@ -52,14 +52,14 @@ jobs:
           # DATABASE_DSN: "user=postgres host=localhost password=postgres port=5432 database=postgres sslmode=disable"
           # POSTGRES_URL: "postgres://postgres:postgres@localhost:5432/postgres?sslmode=disable"
 
-  hello_gary:
+  test_container_build:
     runs-on: ubuntu-latest
-    name: Say Hello
+    name: Test Go API
     steps:
       # Check out the repository to use action
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Hello Gary Step
+      - name: Test Go Module Container
         uses: ./.github/actions # Uses an action in the .github actions directory
         id: container
         with:
