@@ -1,5 +1,5 @@
-# Use Go v1.19
-FROM golang:1.19
+# Use Go v1.20
+FROM golang:1.20
 
 # Set destination for COPY
 WORKDIR /app
