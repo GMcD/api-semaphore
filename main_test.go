@@ -1,4 +1,4 @@
-package api_test
+package main_test
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/GMcD/api-semaphore"
+	"github.com/GMcD/api-semaphore/api"
 )
 
 var a api.App

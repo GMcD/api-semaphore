@@ -1,13 +1,15 @@
-package api
+package main
 
 import (
 	"log"
 	"os"
+
+	"github.com/GMcD/api-semaphore/api"
 )
 
 // Initialize and Run App against Default Db
 func main() {
-	a := App{}
+	a := api.App{}
 	a.Default()
 
 	// Determine port for HTTP service.
