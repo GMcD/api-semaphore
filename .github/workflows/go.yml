@@ -48,6 +48,8 @@ jobs:
         id: container
         with:
           who-to-greet: "Gary MacDonald"
+        env:
+          PGPASSWORD: postgres
 
       # Use the output from the `container` step
       - name: Container Build Output
