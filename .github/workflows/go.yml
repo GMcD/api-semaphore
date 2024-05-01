@@ -43,34 +43,6 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-  test_container_build:
-    runs-on: ubuntu-latest
-    name: Test Go API
-
-    # Service containers to run with `container-job`
-    services:
-      # Label used to access the service container
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_PASSWORD: postgres
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-
-    steps:
-      # Check out the repository to use action
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set PgPass
-        run: echo PGPASSWORD=postgres >> $GITHUB_ENV
-
       - name: Test Go Module Container
         uses: ./.github/actions # Uses an action in the .github actions directory
         id: container
