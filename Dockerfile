@@ -1,6 +1,9 @@
 # Use Go v1.21
 FROM golang:1.21
 
+# Add Postgres Client
+RUN apt-get update && apt-get install -y postgresql-client
+
 # Set destination for COPY
 WORKDIR /app
 

@@ -8,4 +8,6 @@ echo "time=$time" >> $GITHUB_OUTPUT
 
 env | sort
 
+psql -v
+
 # /usr/local/go/bin/go test .
