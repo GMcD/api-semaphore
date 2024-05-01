@@ -54,13 +54,13 @@ jobs:
 
   hello_gary:
     runs-on: ubuntu-latest
-    name: Say Hello Job
+    name: Say Hello
     steps:
       # Check out the repository to use action
       - name: Checkout
         uses: actions/checkout@v4
       - name: Hello Gary Step
-        uses: ./.github/actions # Uses an action in the git hub actions directory
+        uses: ./.github/actions # Uses an action in the .github actions directory
         id: container
         with:
           who-to-greet: "Gary MacDonald"
