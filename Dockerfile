@@ -13,7 +13,7 @@ RUN go mod download
 COPY *.go ./
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-api-ping
+RUN CGO_ENABLED=0 GOOS=linux go build -o /action-api-ping
 
 # Optional:
 # To bind to a TCP port, runtime parameters must be supplied to the docker command.
@@ -23,7 +23,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-api-ping
 EXPOSE 8080
 
 # Run
-# CMD ["/docker-gs-ping"]
+# CMD ["/action-api-ping"]
 
 # Copies your code file from your action repository to the filesystem path `/` of the container
 COPY entrypoint.sh /entrypoint.sh

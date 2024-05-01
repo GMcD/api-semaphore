@@ -5,3 +5,5 @@ time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
 /usr/local/go/bin/go version
+
+/usr/local/go/bin/go test .
