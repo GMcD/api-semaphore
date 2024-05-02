@@ -2,7 +2,6 @@ package api
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 
 	"encoding/json"
@@ -18,18 +17,8 @@ type App struct {
 	DB     *sql.DB
 }
 
-func (a *App) Default() {
-	a.Initialize(
-		getEnv("APP_DB_HOST", "0.0.0.0"),
-		getEnv("APP_DB_USERNAME", "postgres"),
-		getEnv("APP_DB_PASSWORD", "postgres"),
-		getEnv("APP_DB_NAME", "postgres"))
-}
-
-func (a *App) Initialize(host, user, password, dbname string) {
-	connectionString :=
-		fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", host, user, password, dbname)
-	log.Print(connectionString)
+func (a *App) Initialize() {
+	connectionString := GetDsn()
 
 	var err error
 	a.DB, err = sql.Open("postgres", connectionString)

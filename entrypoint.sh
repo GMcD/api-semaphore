@@ -10,10 +10,6 @@ env | sort
 
 psql --version
 
-DB_HOST=$(hostname -I)
-
-echo ${DB_HOST}
-
 PGPASS=postgres
 psql -Atx "host=postgres port=5432 dbname=postgres user=postgres" -c 'select current_date' 
 
