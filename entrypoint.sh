@@ -17,4 +17,4 @@ echo ${DB_HOST}
 PGPASS=postgres
 psql -Atx "host=postgres port=5432 dbname=postgres user=postgres" -c 'select current_date' 
 
-/usr/local/go/bin/go test .
+APP_DB_HOST=postgres /usr/local/go/bin/go test .
