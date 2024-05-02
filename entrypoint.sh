@@ -10,4 +10,4 @@ env | sort
 
 psql --version
 
-# /usr/local/go/bin/go test .
+/usr/local/go/bin/go test .
