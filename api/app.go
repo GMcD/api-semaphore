@@ -20,7 +20,7 @@ type App struct {
 
 func (a *App) Default() {
 	a.Initialize(
-		getEnv("APP_DB_HOST", "postgres"),
+		getEnv("APP_DB_HOST", "0.0.0.0"),
 		getEnv("APP_DB_USERNAME", "postgres"),
 		getEnv("APP_DB_PASSWORD", "postgres"),
 		getEnv("APP_DB_NAME", "postgres"))
