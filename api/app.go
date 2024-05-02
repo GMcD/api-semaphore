@@ -29,6 +29,7 @@ func (a *App) Default() {
 func (a *App) Initialize(host, user, password, dbname string) {
 	connectionString :=
 		fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", host, user, password, dbname)
+	log.Print(connectionString)
 
 	var err error
 	a.DB, err = sql.Open("postgres", connectionString)
