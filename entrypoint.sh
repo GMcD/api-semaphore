@@ -10,8 +10,8 @@ env | sort
 
 psql --version
 
-HOST_IP=$(hostname -I)
+APP_DB_HOST=$(hostname -I)
 
-echo ${HOST_IP}
+echo ${APP_DB_HOST}
 
 /usr/local/go/bin/go test .
