@@ -10,7 +10,7 @@ env | sort
 
 psql --version
 
-HOST_IP=$(host -i)
+HOST_IP=$(hostname -I)
 
 echo ${HOST_IP}
 
