@@ -58,7 +58,7 @@ jobs:
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Container-{{ github.run_id }}
+          name: Container-${{ github.run_id }}
           path: ${{ github.workspace }}
 
       # Use the output from the `container` step
