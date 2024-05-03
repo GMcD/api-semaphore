@@ -91,6 +91,7 @@ jobs:
         run: |-
           docker image ls
           gcloud version
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
           docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
