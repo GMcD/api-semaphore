@@ -88,6 +88,7 @@ jobs:
       #     PGUSER: postgres
       #     PGPASSWORD: postgres
 
+      # Configure /home/runner/.docker/config.json - Deprecate
       - name: Configure Docker Client
         run: |-
           gcloud auth configure-docker # --quiet
