@@ -13,6 +13,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    # Permissions, for Google Auth
+    permissions:
+      contents: "read"
+      id-token: "write"
+
     # Service containers to run with `container-job`
     services:
       postgres:
@@ -55,11 +60,31 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
 
+      - name: Login to GCR
+        env:
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+        uses: google-github-actions/setup-gcloud@v0.3.0
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }} #parse the value of repository secret called SERVICE_ACCOUNT_KEY that we have created earlier
+          project_id: ${{ env.PROJECT_ID }} #parse the value of env called PROJECT_ID
+          export_default_credentials: true
+
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker # --quiet
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Container-${{ github.run_number }}
+          name: ${{ env.CONTAINER_NAME }}-${{ github.run_number }}
           path: ${{ github.workspace }}
+
+      # - name: Authenticate to Google Cloud
+      #   id: auth
+      #   uses: google-github-actions/auth@v2
+      #   with:
+      #     workload_identity_provider: projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/the-workload-pool/providers/the-provider
+      #     service_account: ${{ env.SERVICE_NAME }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
 
       # Use the output from the `container` step
       - name: Container Build Output
