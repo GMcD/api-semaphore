@@ -4,7 +4,9 @@ echo "Hello $1"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
-if [[ $2 == "test" ]]; then
+echo Mode: $2
+
+if [ "$2" == "test" ]; then
     echo "Testing Mode..."
     env | sort
 
@@ -16,7 +18,7 @@ if [[ $2 == "test" ]]; then
     APP_DB_HOST=postgres /usr/local/go/bin/go test .
 fi
 
-if [[ $2 == "run" ]]; then
+if [ "$2" == "run" ]; then
     echo "Running Mode..."
     /usr/local/go/bin/go version
 fi
