@@ -38,11 +38,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Auth with the GCloud Service Key
       - id: "auth"
         uses: "google-github-actions/auth@v2"
         with:
           credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
 
+      # Setup GCloud
       - name: Configure GCloud
         env:
           PROJECT_ID: ${{ env.PROJECT_ID }}
@@ -52,22 +54,27 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           version: ">= 470.0.0"
 
+      # Report GCloud Info
       - name: "Check GCloud CLI"
         run: "gcloud info"
 
+      # Setup Go
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
           go-version: "1.21"
 
+      # Build the Module
       - name: Build
         run: go build -v ./...
 
+      # Test Local
       - name: Local Test
         run: go test -v ./...
         env:
           PGPASSWORD: postgres
 
+      # Build and Tag Container for GCR
       - name: Container Build
         run: |
           docker build -t ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
@@ -94,6 +101,7 @@ jobs:
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
           docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
+      # Upload Build Artifacts to Github - Deprecate
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
