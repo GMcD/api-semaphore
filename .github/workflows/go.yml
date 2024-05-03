@@ -66,7 +66,7 @@ jobs:
 
       - name: Container Build
         run: |
-          docker build -t ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
+          docker build -t ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
 
       # - name: Container Test
       #   uses: ./.github/actions # Uses an action in the .github actions directory
@@ -80,14 +80,13 @@ jobs:
       - name: Configure Docker Client
         run: |-
           gcloud auth configure-docker # --quiet
-
-      # gcloud auth configure-docker europe-west2-docker.pkg.dev # --quiet
+          gcloud auth configure-docker ${{ vars.REPOSITORY }} # --quiet
 
       # tag docker image to gcr image format then push to gcr
       - name: Push Docker Image to GCR
         run: |-
           docker image ls
-          docker push ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
+          docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
