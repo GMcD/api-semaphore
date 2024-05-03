@@ -79,14 +79,15 @@ jobs:
         run: |
           docker build -t ${{ vars.REPOSITORY }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
 
-      # - name: Container Test
-      #   uses: ./.github/actions # Uses an action in the .github actions directory
-      #   id: container
-      #   with:
-      #     who-to-greet: "Gary MacDonald"
-      #   env:
-      #     PGUSER: postgres
-      #     PGPASSWORD: postgres
+      - name: Container Test
+        uses: ./.github/actions
+        id: container
+        with:
+          who-to-greet: "Gary MacDonald"
+          mode: test
+        env:
+          PGUSER: postgres
+          PGPASSWORD: postgres
 
       # Configure /home/runner/.docker/config.json - Deprecate
       - name: Configure Docker Client
