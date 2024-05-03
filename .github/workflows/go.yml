@@ -77,18 +77,17 @@ jobs:
         run: |-
           gcloud auth configure-docker # --quiet
 
+      # tag docker image to gcr image format then push to gcr
+      - name: Push Docker Image to GCR
+        run: |-
+          docker tag ${{ env.CONTAINER_NAME }}:${{ github.run_number }} ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.CONTAINER_NAME }}:${{ github.run_number }} 
+          docker push ${{ env.REGISTRY }}/${{ env.PROJECT_ID }}/${{ env.CONTAINER_NAME }}:${{ github.run_number }}
+
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.CONTAINER_NAME }}-${{ github.run_number }}
           path: ${{ github.workspace }}
-
-      # - name: Authenticate to Google Cloud
-      #   id: auth
-      #   uses: google-github-actions/auth@v2
-      #   with:
-      #     workload_identity_provider: projects/${{ env.PROJECT_ID }}/locations/global/workloadIdentityPools/the-workload-pool/providers/the-provider
-      #     service_account: ${{ env.SERVICE_NAME }}@${{ env.PROJECT_ID }}.iam.gserviceaccount.com
 
       # Use the output from the `container` step
       - name: Container Build Output
