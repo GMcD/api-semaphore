@@ -50,7 +50,7 @@ jobs:
         with:
           service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           project_id: ${{ env.PROJECT_ID }}
-          version: ">= 363.0.0"
+          version: ">= 470.0.0"
 
       - name: "Check GCloud CLI"
         run: "gcloud info"
