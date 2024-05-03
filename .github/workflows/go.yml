@@ -41,14 +41,14 @@ jobs:
       - name: Login to GCP
         uses: "google-github-actions/auth@v2"
         with:
-          credentials_json: "${{ secrets.GLOUD_SERVICE_KEY }}"
+          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
 
       - name: Configure GCloud
         env:
           PROJECT_ID: ${{ env.PROJECT_ID }}
         uses: google-github-actions/setup-gcloud@v0.3.0
         with:
-          service_account_key: ${{ secrets.GLOUD_SERVICE_KEY }}
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
           project_id: ${{ env.PROJECT_ID }}
 
       - name: Set up Go
