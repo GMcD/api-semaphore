@@ -12,7 +12,7 @@ func main() {
 	a.Initialize()
 
 	// Seed a few records
-	addProducts(a, 4)
+	AddProducts(a, 4)
 
 	// Determine port for HTTP service.
 	port := api.GetEnv("PORT", "8100")

@@ -9,6 +9,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/GMcD/api-semaphore"
 	"github.com/GMcD/api-semaphore/api"
 )
 
@@ -82,7 +83,7 @@ func TestCreateProduct(t *testing.T) {
 
 func TestGetProduct(t *testing.T) {
 	clearTable()
-	addProducts(1)
+	main.AddProducts(a, 1)
 
 	req, _ := http.NewRequest("GET", "/product/1", nil)
 	response := executeRequest(req)
@@ -93,7 +94,7 @@ func TestGetProduct(t *testing.T) {
 func TestUpdateProduct(t *testing.T) {
 
 	clearTable()
-	addProducts(1)
+	main.AddProducts(a, 1)
 
 	req, _ := http.NewRequest("GET", "/product/1", nil)
 	response := executeRequest(req)
@@ -126,7 +127,7 @@ func TestUpdateProduct(t *testing.T) {
 
 func TestDeleteProduct(t *testing.T) {
 	clearTable()
-	addProducts(1)
+	main.AddProducts(a, 1)
 
 	req, _ := http.NewRequest("GET", "/product/1", nil)
 	response := executeRequest(req)

@@ -6,7 +6,7 @@ import (
 	"github.com/GMcD/api-semaphore/api"
 )
 
-func addProducts(a api.App, count int) {
+func AddProducts(a api.App, count int) {
 	if count < 1 {
 		count = 1
 	}
