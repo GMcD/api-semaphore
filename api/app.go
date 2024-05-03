@@ -32,7 +32,11 @@ func (a *App) Initialize() {
 }
 
 func (a *App) Run(addr string) {
-	log.Fatal(http.ListenAndServe(":8010", a.Router))
+	log.Printf("Listening on %v", addr)
+
+	res := http.ListenAndServe(addr, a.Router)
+
+	log.Fatal(res)
 }
 
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {

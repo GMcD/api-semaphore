@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strconv"
 	"testing"
 
 	"github.com/GMcD/api-semaphore/api"
@@ -163,16 +162,6 @@ func checkResponseCode(t *testing.T, expected, actual int) {
 func ensureTableExists() {
 	if _, err := a.DB.Exec(tableCreationQuery); err != nil {
 		log.Fatal(err)
-	}
-}
-
-func addProducts(count int) {
-	if count < 1 {
-		count = 1
-	}
-
-	for i := 0; i < count; i++ {
-		a.DB.Exec("INSERT INTO products(name, price) VALUES($1, $2)", "Product "+strconv.Itoa(i), (i+1.0)*10)
 	}
 }
 

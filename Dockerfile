@@ -12,26 +12,18 @@ COPY go.mod go.sum ./
 COPY api/go.mod api/go.sum ./api/
 RUN go mod download
 
-# Copy the source code. Note the slash at the end, as explained in
-# https://docs.docker.com/reference/dockerfile/#copy
+# Copy the source code.
 COPY *.go ./
 COPY api/*.go ./api/
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -o /action-api-ping
+# RUN CGO_ENABLED=0 GOOS=linux go build -o /action-api-ping
 
-# Optional:
-# To bind to a TCP port, runtime parameters must be supplied to the docker command.
-# But we can document in the Dockerfile what ports
-# the application is going to listen on by default.
-# https://docs.docker.com/reference/dockerfile/#expose
-EXPOSE 8080
+# Optional, as overwritten
+EXPOSE 8100
 
-# Run
-# CMD ["/action-api-ping"]
-
-# Copies your code file from your action repository to the filesystem path `/` of the container
+# Copies your entrypoint.sh to root
 COPY entrypoint.sh /entrypoint.sh
 
-# Code file to execute when the docker container starts up (`entrypoint.sh`)
+# Docker Container (`entrypoint.sh`), expects 'test' or 'run' mode
 ENTRYPOINT ["/entrypoint.sh"]

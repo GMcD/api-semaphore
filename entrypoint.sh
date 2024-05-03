@@ -21,4 +21,6 @@ fi
 if [ "$2" = "run" ]; then
     echo "Running Mode..."
     /usr/local/go/bin/go version
+
+    APP_DB_HOST=postgres /usr/local/go/bin/go run .
 fi
