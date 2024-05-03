@@ -64,14 +64,18 @@ jobs:
         env:
           PGPASSWORD: postgres
 
-      - name: Container Test
-        uses: ./.github/actions # Uses an action in the .github actions directory
-        id: container
-        with:
-          who-to-greet: "Gary MacDonald"
-        env:
-          PGUSER: postgres
-          PGPASSWORD: postgres
+      - name: Container Build
+        run: |
+          docker build -t ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
+
+      # - name: Container Test
+      #   uses: ./.github/actions # Uses an action in the .github actions directory
+      #   id: container
+      #   with:
+      #     who-to-greet: "Gary MacDonald"
+      #   env:
+      #     PGUSER: postgres
+      #     PGPASSWORD: postgres
 
       - name: Configure Docker Client
         run: |-
@@ -81,13 +85,12 @@ jobs:
       - name: Push Docker Image to GCR
         run: |-
           docker image ls
-          docker tag ${{ vars.CONTAINER_NAME }}:latest ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }} 
-          docker push ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }}
+          docker push ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ vars.CONTAINER_NAME }}-${{ github.run_number }}
+          name: ${{ vars.IMAGE_NAME }}-${{ github.run_number }}
           path: ${{ github.workspace }}
 
       # Use the output from the `container` step
