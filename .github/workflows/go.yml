@@ -89,8 +89,8 @@ jobs:
       # tag docker image to gcr image format then push to gcr
       - name: Push Docker Image to GCR
         run: |-
-          docker image ls
           gcloud version
+          docker image ls | head -2 | tail -1
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
           docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
