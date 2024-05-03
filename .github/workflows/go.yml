@@ -81,13 +81,13 @@ jobs:
       - name: Push Docker Image to GCR
         run: |-
           env | sort
-          docker tag ${{ vars.CONTAINER_NAME }}:${{ github.run_number }} ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }} 
+          docker tag ${{ vars.CONTAINER_NAME }}:latest ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }} 
           docker push ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.CONTAINER_NAME }}-${{ github.run_number }}
+          name: ${{ vars.CONTAINER_NAME }}-${{ github.run_number }}
           path: ${{ github.workspace }}
 
       # Use the output from the `container` step
