@@ -77,7 +77,7 @@ jobs:
       # Build and Tag Container for GCR
       - name: Container Build
         run: |
-          docker build -t ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
+          docker build -t ${{ vars.REPOSITORY }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }} .
 
       # - name: Container Test
       #   uses: ./.github/actions # Uses an action in the .github actions directory
@@ -100,7 +100,7 @@ jobs:
           docker image ls | head -2 | tail -1
           gcloud version
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
-          docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
+          docker push ${{ vars.REPOSITORY }}//${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       # Upload Build Artifacts to Github - Deprecate
       - name: Upload Build Artifacts
