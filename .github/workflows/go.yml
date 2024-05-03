@@ -60,7 +60,14 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
 
-      - name: Login to GCR
+      - id: Login to GCP
+        uses: "google-github-actions/auth@v2"
+        with:
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Configure GCloud
         env:
           PROJECT_ID: ${{ env.PROJECT_ID }}
         uses: google-github-actions/setup-gcloud@v0.3.0
