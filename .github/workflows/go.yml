@@ -44,7 +44,6 @@ jobs:
           service_account: ${{ env.SERVICE_NAME}}
           credentials_json: ${{ secrets.GLOUD_SERVICE_KEY }}
           project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
 
       - name: Configure GCloud
         env:
@@ -53,7 +52,6 @@ jobs:
         with:
           service_account_key: ${{ secrets.GLOUD_SERVICE_KEY }}
           project_id: ${{ env.PROJECT_ID }}
-          export_default_credentials: true
 
       - name: Set up Go
         uses: actions/setup-go@v5
