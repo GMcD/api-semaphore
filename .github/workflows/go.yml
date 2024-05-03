@@ -80,7 +80,7 @@ jobs:
       # tag docker image to gcr image format then push to gcr
       - name: Push Docker Image to GCR
         run: |-
-          env | sort
+          docker image ls
           docker tag ${{ vars.CONTAINER_NAME }}:latest ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }} 
           docker push ${{ vars.REGISTRY }}/${{ vars.PROJECT_ID }}/${{ vars.CONTAINER_NAME }}:${{ github.run_number }}
 
