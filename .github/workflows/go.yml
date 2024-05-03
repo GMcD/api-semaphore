@@ -60,7 +60,7 @@ jobs:
           PGUSER: postgres
           PGPASSWORD: postgres
 
-      - id: Login to GCP
+      - name: Login to GCP
         uses: "google-github-actions/auth@v2"
         with:
           service_account_key: ${{ secrets.SERVICE_ACCOUNT_KEY }}
