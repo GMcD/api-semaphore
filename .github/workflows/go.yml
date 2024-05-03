@@ -41,7 +41,7 @@ jobs:
       - name: Login to GCP
         uses: "google-github-actions/auth@v2"
         with:
-          credentials_json: '${{ secrets.GLOUD_SERVICE_KEY }}''
+          credentials_json: "${{ secrets.GLOUD_SERVICE_KEY }}"
 
       - name: Configure GCloud
         env:
