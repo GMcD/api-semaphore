@@ -89,10 +89,10 @@ jobs:
       # tag docker image to gcr image format then push to gcr
       - name: Push Docker Image to GCR
         run: |-
-          gcloud version
           docker image ls | head -2 | tail -1
+          gcloud version
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
-          docker push ${{ vars.REPOSITORY }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
+          docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
