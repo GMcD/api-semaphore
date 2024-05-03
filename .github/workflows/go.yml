@@ -90,7 +90,7 @@ jobs:
       - name: Push Docker Image to GCR
         run: |-
           docker image ls
-          gcloud auth login
+          gcloud version
           docker push ${{ vars.REPOSITORY }}/${{ vars.PROJECT_ID }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}
 
       - name: Upload Build Artifacts
