@@ -118,8 +118,9 @@ jobs:
           name: "${{ env.RELEASE_NAME }}"
           region: "${{ vars.REGION }}"
           description: "${{ env.GITHUB_COMMIT_MSG }}"
-          skaffold_file: "config/skaffold.yaml"
           images: "app=${{ env.GCR_NAME }}"
+
+          # skaffold_file: "config/skaffold.yaml"
 
       # Upload Build Artifacts to Github - Deprecate
       - name: Upload Build Artifacts
