@@ -7,10 +7,12 @@ build:
     - image: dockerfile-image
       docker:
         dockerfile: Dockerfile
-manifests:
-  rawYaml:
-    - deployment.yaml
 portForward:
   - resourceType: service
     resourceName: dockerfile-image
     port: 8100
+profiles:
+  - name: target-1
+    manifests:
+      rawYaml:
+        - deployment.yaml
