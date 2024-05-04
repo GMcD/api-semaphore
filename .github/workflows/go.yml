@@ -117,6 +117,7 @@ jobs:
           delivery_pipeline: ${{ vars.IMAGE_NAME }}
           name: "${{ vars.RELEASE_NAME }}"
           region: "${{ vars.REGION }}"
+          release_name: ${{ env.RELEASE_NAME }}
           description: "${{ env.GITHUB_COMMIT_MSG }}"
           skaffold_file: "config/skaffold.yaml"
           images: "app=${{ env.GCR_NAME }}"
