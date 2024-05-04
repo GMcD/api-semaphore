@@ -115,9 +115,8 @@ jobs:
         uses: "google-github-actions/create-cloud-deploy-release@v0"
         with:
           delivery_pipeline: ${{ vars.IMAGE_NAME }}
-          name: "${{ vars.RELEASE_NAME }}"
-          region: "${{ vars.REGION }}"
-          release_name: ${{ env.RELEASE_NAME }}
+          name: "${{ env.RELEASE_NAME }}"
+          region: "${{ env.REGION }}"
           description: "${{ env.GITHUB_COMMIT_MSG }}"
           skaffold_file: "config/skaffold.yaml"
           images: "app=${{ env.GCR_NAME }}"
