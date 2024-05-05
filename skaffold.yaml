@@ -1,4 +1,4 @@
-apiVersion: skaffold/v4beta10
+apiVersion: skaffold/v3
 kind: Config
 metadata:
   name: api-semaphore
