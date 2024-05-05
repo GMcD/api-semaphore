@@ -11,10 +11,10 @@ portForward:
   - resourceType: service
     resourceName: dockerfile-image
     port: 8100
+manifests:
+  rawYaml:
+    - service.yaml
 profiles:
   - name: target-1
-    manifests:
-      rawYaml:
-        - service.yaml
 deploy:
   cloudrun: {}
