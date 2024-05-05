@@ -15,4 +15,6 @@ profiles:
   - name: target-1
     manifests:
       rawYaml:
-        - deployment.yaml
+        - service.yaml
+deploy:
+  cloudrun: {}
