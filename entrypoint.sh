@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
 # Load Env from .env
-. .env
+. /app/.env
 
 echo "Hello $1"
 time=$(date)
