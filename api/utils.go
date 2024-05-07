@@ -4,7 +4,22 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sync"
+
+	"github.com/joho/godotenv"
 )
+
+var once sync.Once
+
+func Env() {
+	once.Do(func() {
+		// Find .env file
+		err := godotenv.Load(".env")
+		if err != nil {
+			log.Fatalf("Error loading .env file: %s", err)
+		}
+	})
+}
 
 // Provide Default for Env Var
 func getEnv(key, fallback string) string {

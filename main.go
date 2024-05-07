@@ -4,8 +4,11 @@ import (
 	"github.com/GMcD/api-semaphore/api"
 )
 
-// Initialize and Run App against Default Db
+// Initialize and Run App against Env Db
 func main() {
+
+	// Setup Env
+	api.Env()
 
 	// Setup App
 	a := api.App{}

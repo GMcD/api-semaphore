@@ -1,5 +1,8 @@
 #!/bin/sh -l
 
+# Load Env from .env
+source .env
+
 echo "Hello $1"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
@@ -12,10 +15,10 @@ if [ "$2" = "test" ]; then
 
     psql --version
 
-    PGPASS=postgres
-    psql -Atx "host=postgres port=5432 dbname=postgres user=postgres" -c 'select current_date' 
+    PGPASS=${DB_PASS}
+    psql -Atx "host=${INSTANCE_UNIX_SOCKET} dbname=${DB_NAME} user=${DB_USER}" -c 'select current_date' 
 
-    APP_DB_HOST=postgres /usr/local/go/bin/go test .
+    APP_DB_HOST=${INSTANCE_UNIX_SOCKET} /usr/local/go/bin/go test .
 
     exit $?
 fi
@@ -24,5 +27,5 @@ fi
     echo "Running Mode..."
     /usr/local/go/bin/go version
 
-    APP_DB_HOST=postgres /usr/local/go/bin/go run .
+    APP_DB_HOST=${INSTANCE_UNIX_SOCKET} /usr/local/go/bin/go run .
 # fi
