@@ -12,6 +12,9 @@ COPY go.mod go.sum ./
 COPY api/go.mod api/go.sum ./api/
 RUN go mod download
 
+# Copy the .env
+COPY .env ./
+
 # Copy the source code.
 COPY *.go ./
 COPY api/*.go ./api/
