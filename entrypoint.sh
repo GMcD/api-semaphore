@@ -1,7 +1,7 @@
 #!/bin/sh -l
 
 # Load Env from .env
-. /app/.env
+. ./.env
 
 echo "Hello $1"
 time=$(date)
@@ -16,16 +16,19 @@ if [ "$2" = "test" ]; then
     psql --version
 
     PGPASS=${APP_DB_PASSWORD}
-    psql -Atx "host=${APP_DB_HOST} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME}" -c 'select current_date' 
+    psql -Atx "hostaddr=${APP_DB_HOST} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
 
-    /usr/local/go/bin/go test .
+    PGPASS=${APP_DB_PASSWORD}
+    psql "hostaddr=35.242.149.106 dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
+
+    /usr/local/bin/go test .
 
     exit $?
 fi
 
 # if [ "$2" = "run" ]; then
     echo "Running Mode..."
-    /usr/local/go/bin/go version
+    /usr/local/bin/go version
 
-    /usr/local/go/bin/go run .
+    /usr/local/bin/go run .
 # fi

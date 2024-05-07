@@ -7,39 +7,6 @@ import (
 	"github.com/GMcD/api-semaphore/api"
 )
 
-// gorm database instance
-var o api.Orm
-
-// Number of Seed Records
-const records = 3
-
-// Set Up Gorm Database
-func setupSuite(t *testing.T) func(t *testing.T) {
-	t.Log("Setting up database for tests")
-	o.SetupDb()
-
-	// Seed Records
-	coat := &api.Item{Description: "Coat", Price: 123}
-	coat.CreateItem(o.DB)
-	shoes := &api.Item{Description: "Shoes", Price: 234}
-	shoes.CreateItem(o.DB)
-	trousers := &api.Item{Description: "Trousers", Price: 150}
-	trousers.CreateItem(o.DB)
-	//	o.CreateItem(&api.Item{Description: "Trousers", Price: 150})
-
-	// Close Connection
-	return func(t *testing.T) {
-		t.Log("Tearing down database")
-		api.Item{}.HardDeleteAll(o.DB)
-		// Probably Unneccesary
-		sqlDB, err := o.DB.DB()
-		if err != nil {
-			log.Fatalln(err)
-		}
-		sqlDB.Close()
-	}
-}
-
 func TestOrmSetup(t *testing.T) {
 	teardownSuite := setupSuite(t)
 	defer teardownSuite(t)

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"log"
 
 	"encoding/json"
@@ -9,7 +8,7 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	_ "github.com/lib/pq"
+	"gorm.io/gorm"
 )
 
 type Msg struct {
@@ -18,18 +17,23 @@ type Msg struct {
 
 type App struct {
 	Router *mux.Router
-	DB     *sql.DB
+	DB     *gorm.DB
 }
 
 // Setup Database, Router, and Routes
 func (a *App) Initialize() {
-	connectionString := GetDsn()
 
-	var err error
-	a.DB, err = sql.Open("postgres", connectionString)
-	if err != nil {
-		log.Fatal(err)
-	}
+	var o Orm
+	o.SetupDb()
+	a.DB = o.DB
+
+	// connectionString := GetDsn()
+
+	// var err error
+	// a.DB, err = sql.Open("postgres", connectionString)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	a.Router = mux.NewRouter()
 
@@ -86,11 +90,8 @@ func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {
 		start = 0
 	}
 
-	products, err := getProducts(a.DB, start, count)
-	if err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	product := &Product{}
+	products := product.GetProducts(a.DB, start, count)
 
 	respondWithJSON(w, http.StatusOK, products)
 }
@@ -104,14 +105,10 @@ func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := product{ID: id}
-	if err := p.getProduct(a.DB); err != nil {
-		switch err {
-		case sql.ErrNoRows:
-			respondWithError(w, http.StatusNotFound, "Product not found")
-		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
+	p := Product{ID: id}
+	_, err = p.GetProduct(a.DB, id)
+	if err != nil {
+		respondWithError(w, http.StatusNotFound, "Product ID not found")
 		return
 	}
 
@@ -120,7 +117,7 @@ func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
 
 // Create a product
 func (a *App) createProduct(w http.ResponseWriter, r *http.Request) {
-	var p product
+	var p Product
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -128,24 +125,21 @@ func (a *App) createProduct(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := p.createProduct(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	p.CreateProduct(a.DB)
 
 	respondWithJSON(w, http.StatusCreated, p)
 }
 
-// Update a product
+// Update a Product
 func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid Product ID")
 		return
 	}
 
-	var p product
+	var p Product
 	decoder := json.NewDecoder(r.Body)
 	if err := decoder.Decode(&p); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
@@ -154,15 +148,12 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	p.ID = id
 
-	if err := p.updateProduct(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	p.UpdateProduct(a.DB, &p)
 
 	respondWithJSON(w, http.StatusOK, p)
 }
 
-// Delete a product
+// Delete a Product
 func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id, err := strconv.Atoi(vars["id"])
@@ -171,11 +162,8 @@ func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := product{ID: id}
-	if err := p.deleteProduct(a.DB); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
+	p := Product{ID: id}
+	p.DeleteProduct(a.DB)
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }

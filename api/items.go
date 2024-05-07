@@ -2,10 +2,11 @@ package api
 
 import "gorm.io/gorm"
 
+// Item Struct
 type Item struct {
 	gorm.Model
-	Description string
-	Price       uint
+	Description string `json:"description"`
+	Price       uint   `json:"price"`
 }
 
 // Count Items
