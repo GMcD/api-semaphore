@@ -50,7 +50,7 @@ jobs:
           PGPASS: ${ APP_DB_PASSWORD }}
         run: |-
           docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
-          psql "hostaddr=localhost dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
+          psql "hostaddr=0.0.0.0 dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
 
       # Setup GCloud
       - name: Configure GCloud
