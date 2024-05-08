@@ -1,5 +1,5 @@
 # action.yml
-name: "Hello World"
+name: "Build api-semaphore Dockerfile"
 description: "Greet someone and record the time"
 inputs:
   greetings: # id of input
@@ -16,7 +16,7 @@ outputs:
 runs:
   using: "docker"
   image: "../../Dockerfile"
-  build-args:
+  args:
     - ${{ inputs.greetings }}
     - ${{ inputs.mode }}
     - ${{ inputs.APP_DB_HOST }}
