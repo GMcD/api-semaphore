@@ -1,9 +1,9 @@
 #!/bin/sh -l
 
-# Load Env from .env
-. ./.env
+# Load Env from .env -> These come from GitHub Action Workflow now...
+# . ./.env
 
-echo "Hello ${INPUT_WHO-TO-GREET}"
+echo "Hello ${INPUT_GREETINGS}"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
