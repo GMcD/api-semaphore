@@ -46,12 +46,9 @@ jobs:
 
       # Start GCloud SQL Proxy, and test. Note, APP_DB_HOST is in effect localhost here, as we are running the proxy to instance ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
       - name: Google Cloud SQL Proxy
-        env:
-          PGPASS: ${{ secrets.APP_DB_PASSWORD }}
         run: |-
           docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
-          echo "PGPASS = $PGPASS"
-          psql "hostaddr=0.0.0.0 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "hostaddr=0.0.0.0 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # Setup GCloud
       - name: Configure GCloud
