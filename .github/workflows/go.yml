@@ -111,11 +111,11 @@ jobs:
       - name: Local Test
         run: go test -v ./...
         env:
-          APP_DB_HOST: 0.0.0.0
-          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
-          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
-          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
-          APP_DB_PORT: 6432
+          INPUT_APP_DB_HOST: 0.0.0.0
+          INPUT_APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          INPUT_APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          INPUT_APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          INPUT_APP_DB_PORT: 6432
 
       # Setup Env for Container and Release
       - name: "Set Environment"
