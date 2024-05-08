@@ -50,7 +50,6 @@ jobs:
           login: x-oauth-basic
           password: ${{ secrets.GH_TOKEN }} // this is used to allow checkout to pull private repos
 
-      # Auth with the GCloud Service Key
       - name: Google auth
         id: auth
         uses: google-github-actions/auth@v2
@@ -176,3 +175,8 @@ jobs:
       # Use the output from the `container` step
       - name: Container Build Output
         run: echo "The time was ${{ steps.container.outputs.time }}"
+
+      # Print Logs on failure
+      - name: Print logs on onfailure
+        if: ${{ failure() }}
+        run: docker logs gce-cloudsql-proxy
