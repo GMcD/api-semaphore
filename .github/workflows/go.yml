@@ -111,6 +111,7 @@ jobs:
       - name: Local Test
         run: go test -v ./...
         env:
+          APP_DB_HOST: 0.0.0.0
           APP_DB_NAME: ${{ vars.APP_DB_NAME }}
           APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
           APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
@@ -134,7 +135,6 @@ jobs:
         with:
           who-to-greet: "Gary MacDonald"
           mode: test
-        env:
           APP_DB_HOST: postgres
           APP_DB_NAME: ${{ vars.APP_DB_NAME }}
           APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}

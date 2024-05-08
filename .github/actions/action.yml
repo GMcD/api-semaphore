@@ -19,3 +19,8 @@ runs:
   args:
     - ${{ inputs.who-to-greet }}
     - ${{ inputs.mode }}
+    - ${{ inputs.APP_DB_HOST }}
+    - ${{ inputs.APP_DB_PORT }}
+    - ${{ inputs.APP_DB_NAME }}
+    - ${{ inputs.APP_DB_USERNAME }}
+    - ${{ inputs.APP_DB_PASSWORD }}
