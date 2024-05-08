@@ -133,13 +133,13 @@ jobs:
         uses: ./.github/actions
         id: container
         with:
-          who-to-greet: "Gary MacDonald"
+          greetings: "Gary MacDonald"
           mode: test
-          APP_DB_HOST: postgres
-          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
-          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
-          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
-          APP_DB_PORT: 6432
+          INPUT_APP_DB_HOST: postgres
+          INPUT_APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          INPUT_APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          INPUT_APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          INPUT_APP_DB_PORT: 6432
 
       # Configure /home/runner/.docker/config.json - Deprecate?
       - name: Configure Docker Client

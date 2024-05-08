@@ -39,13 +39,13 @@ func GetEnv(key, fallback string) string {
 // dsn := "host=localhost user=gorm password=gorm dbname=gorm port=5432 sslmode=disable TimeZone=Europe/London"
 
 func GetDsn() string {
-	host := GetEnv("APP_DB_HOST", "0.0.0.0")
-	port := GetEnv("APP_DB_PORT", "5432")
-	user := GetEnv("APP_DB_USERNAME", "postgres")
-	password := GetEnv("APP_DB_PASSWORD", "postgres")
-	dbname := GetEnv("APP_DB_NAME", "postgres")
+	host := GetEnv("INPUT_APP_DB_HOST", "0.0.0.0")
+	port := GetEnv("INPUT_APP_DB_PORT", "5432")
+	dbname := GetEnv("INPUT_APP_DB_NAME", "postgres")
+	user := GetEnv("INPUT_APP_DB_USERNAME", "postgres")
+	password := GetEnv("INPUT_APP_DB_PASSWORD", "postgres")
 	connectionString :=
-		fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
+		fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", host, port, dbname, user, password)
 	log.Print(connectionString)
 	return connectionString
 }
