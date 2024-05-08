@@ -43,19 +43,50 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Auth with the GCloud Service Key
-      - id: "auth"
-        uses: "google-github-actions/auth@v2"
+      - name: Apply netrc creds with direct input
+        uses: little-core-labs/netrc-creds@master
         with:
-          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
+          machine: github.com
+          login: x-oauth-basic
+          password: ${{ secrets.GH_TOKEN }} // this is used to allow checkout to pull private repos
 
-      # Start GCloud SQL Proxy, and test. Note, APP_DB_HOST is in effect localhost:5432 here, as we are running the proxy to instance ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+      # Auth with the GCloud Service Key
+      - name: Google auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: "access_token"
+          access_token_lifetime: "120s"
+          create_credentials_file: true
+          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
+          service_account: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+
       - name: Google Cloud SQL Proxy
         run: |-
-          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
-          docker ps
-          sleep 5
-          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=localhost port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+
+      - name: Install DBmate
+        run: |-
+          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          sudo chmod +x /usr/local/bin/dbmate
+
+      - name: Check Google Cloud SQL Proxy
+        run: |-
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+
+      # # # Auth with the GCloud Service Key
+      # # - id: "auth"
+      # #   uses: "google-github-actions/auth@v2"
+      # #   with:
+      # #     credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
+
+      # # Start GCloud SQL Proxy, and test. Note, APP_DB_HOST is in effect localhost:5432 here, as we are running the proxy to instance ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+      # - name: Google Cloud SQL Proxy
+      #   run: |-
+      #     docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+      #     docker ps
+      #     sleep 5
+      #     PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=localhost port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # Setup GCloud
       - name: Configure GCloud
