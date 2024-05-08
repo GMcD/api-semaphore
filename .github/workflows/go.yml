@@ -48,7 +48,7 @@ jobs:
       - name: Google Cloud SQL Proxy
         run: |-
           docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
-          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "hostaddr=0.0.0.0 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+          PGPASSWORD=Noddy.Pass psql "hostaddr=0.0.0.0 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # Setup GCloud
       - name: Configure GCloud
