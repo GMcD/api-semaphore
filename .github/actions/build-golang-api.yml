@@ -10,6 +10,7 @@ inputs:
     description: "Which Mode"
     required: true
     default: "test"
+  APP_DB_HOST:
 outputs:
   time: # id of output
     description: "The time we greeted you"

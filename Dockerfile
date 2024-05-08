@@ -4,6 +4,12 @@ FROM golang:1.21
 # Add Postgres Client
 RUN apt-get update && apt-get install -y postgresql-client
 
+# Set Up ENV
+ENV APP_DB_HOST $INPUT_APP_DB_HOST
+ENV APP_DB_PORT $INPUT_APP_DB_PORT
+ENV APP_DB_USERNAME $INPUT_APP_DB_USERNAME
+ENV APP_DB_PASSWORD $INPUT_APP_DB_PASSWORD
+
 # Set destination for COPY
 WORKDIR /app
 

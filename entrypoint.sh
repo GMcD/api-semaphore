@@ -3,7 +3,7 @@
 # Load Env from .env
 . ./.env
 
-echo "Hello ${INPUT_}"
+echo "Hello ${INPUT_WHO-TO-GREET}"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
@@ -14,8 +14,8 @@ echo Mode: ${INPUT_MODE}
 # Check Psql Version and Db Connectivity
 /usr/local/go/bin/go version
 psql --version
-PGPASS=${INPUT_APP_DB_PASSWORD}
-psql -Atx "hostaddr=${INPUT_APP_DB_HOST} port=${INPUT_APP_DB_PORT} dbname=${INPUT_APP_DB_NAME} user=${INPUT_APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
+PGPASS=${APP_DB_PASSWORD}
+psql -Atx "hostaddr=${APP_DB_HOST} port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
 
 if [ "${INPUT_MODE}" = "test" ]; then
     echo "Testing Mode..."
