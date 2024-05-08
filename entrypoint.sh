@@ -7,6 +7,8 @@ echo "Hello $1"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
+env | sort
+
 echo Mode: $2
 
 # Check Db Connectivity
@@ -19,14 +21,14 @@ if [ "$2" = "test" ]; then
 
     psql --version
 
-    /usr/local/bin/go test .
+    /usr/local/go/bin/go test .
 
     exit $?
 fi
 
 # if [ "$2" = "run" ]; then
     echo "Running Mode..."
-    /usr/local/bin/go version
+    /usr/local/go/bin/go version
 
-    /usr/local/bin/go run .
+    /usr/local/go/bin/go run .
 # fi
