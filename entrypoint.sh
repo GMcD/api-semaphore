@@ -9,17 +9,15 @@ echo "time=$time" >> $GITHUB_OUTPUT
 
 echo Mode: $2
 
+# Check Db Connectivity
+PGPASS=${APP_DB_PASSWORD}
+psql -Atx "hostaddr=${APP_DB_HOST} port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
+
 if [ "$2" = "test" ]; then
     echo "Testing Mode..."
     env | sort
 
     psql --version
-
-    PGPASS=${APP_DB_PASSWORD}
-    psql -Atx "hostaddr=${APP_DB_HOST} port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
-
-    PGPASS=${APP_DB_PASSWORD}
-    psql "hostaddr=35.242.149.106 port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
 
     /usr/local/bin/go test .
 
