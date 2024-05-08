@@ -1,0 +1,41 @@
+jobs:
+  database-migrations:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.token }} // this is used to allow checkout to pull private repos
+
+      - name: Apply netrc creds with direct input
+        uses: little-core-labs/netrc-creds@master
+        with:
+          machine: github.com
+          login: x-oauth-basic
+          password: ${{ secrets.token }} // this is used to allow checkout to pull private repos
+
+      - name: Google auth
+        id: auth
+        uses: google-github-actions/auth@v1
+        with:
+          token_format: "access_token"
+          access_token_lifetime: "120s"
+          create_credentials_file: true
+          credentials_json: "${{ secrets.GCP_CREDENTIALS_JSON }}"
+          service_account: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+
+      - name: Google Cloud SQL Proxy
+        run: |-
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} project:europe-west1:database
+
+      - name: Install DBmate
+        run: |-
+          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          sudo chmod +x /usr/local/bin/dbmate
+
+      - name: Run Migrations
+        run: |-
+          dbmate --wait -d ./migrations --url "postgresql://postgres:postgres@localhost:5432/postgres?sslmode=disable" migrate
+
+      - name: Print logs on onfailure
+        if: ${{ failure() }}
+        run: docker logs gce-cloudsql-proxy

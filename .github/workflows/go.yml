@@ -44,6 +44,11 @@ jobs:
         with:
           credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
 
+      # Start GCloud SQL Proxy
+      - name: Google Cloud SQL Proxy
+        run: |-
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:golang-psql
+
       # Setup GCloud
       - name: Configure GCloud
         env:

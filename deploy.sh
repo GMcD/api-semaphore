@@ -57,8 +57,13 @@ gcloud run deploy golang-api \
 # Connect as Root User
 gcloud sql connect ${INSTANCE} --user=postgres --quiet
 
-# Connect as the App User
+# Connect as the App User with GCloud
 echo ${PASSWORD} | gcloud sql connect ${INSTANCE} -d=${DB_NAME} -u=${DB_USER} --quiet
+
+# Connect as the App User with Psql
+PGPASS=${APP_DB_PASSWORD}
+psql "hostaddr=35.242.149.106 dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
+
 
 # # Deploy DB Container
 # gcloud run deploy golang-sql \
