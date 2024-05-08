@@ -7,6 +7,13 @@ echo "Hello ${INPUT_GREETINGS}"
 time=$(date)
 echo "time=$time" >> $GITHUB_OUTPUT
 
+# Golang expects standard names, not GA mangled ones
+export APP_DB_HOST=${INPUT_APP_DB_HOST}
+export APP_DB_PORT=${INPUT_APP_DB_PORT}
+export APP_DB_NAME=${INPUT_APP_DB_NAME}
+export APP_DB_USERNAME=${INPUT_APP_DB_USERMNAME}
+export APP_DB_PASSWORD=${INPUT_APP_DB_PASSWORD}
+
 env | sort
 
 echo Mode: ${INPUT_MODE}
