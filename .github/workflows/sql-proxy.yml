@@ -39,7 +39,7 @@ jobs:
 
       - name: Check Google Cloud SQL Proxy
         run: |-
-          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=localhost port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       - name: Run Migrations
         run: |-
