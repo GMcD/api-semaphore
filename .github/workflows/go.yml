@@ -69,6 +69,11 @@ jobs:
           sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
           sudo chmod +x /usr/local/bin/dbmate
 
+      - name: Install DBmate
+        run: |-
+          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          sudo chmod +x /usr/local/bin/dbmate
+
       - name: Check Google Cloud SQL Proxy
         run: |-
           PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
