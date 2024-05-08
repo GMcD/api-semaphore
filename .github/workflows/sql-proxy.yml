@@ -30,7 +30,7 @@ jobs:
 
       - name: Google Cloud SQL Proxy
         run: |-
-          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} project:europe-west1:database
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
 
       - name: Install DBmate
         run: |-
