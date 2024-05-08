@@ -9,8 +9,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GH_TOKEN }} // this is used to allow checkout to pull private repos
 
       - name: Apply netrc creds with direct input
         uses: little-core-labs/netrc-creds@master
