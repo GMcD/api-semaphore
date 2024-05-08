@@ -18,27 +18,23 @@ jobs:
       contents: "read"
       id-token: "write"
 
-    # # Service containers to run with `container-job`
-    # services:
-    #   postgres:
-    #     image: postgres
-    #     env:
-    #       POSTGRES_HOST: postgres
-    #       POSTGRES_DB: postgres
-    #       POSTGRES_USER: postgres
-    #       POSTGRES_PASSWORD: postgres
-    #     options: >-
-    #       --health-cmd pg_isready
-    #       --health-interval 10s
-    #       --health-timeout 5s
-    #       --health-retries 5
-    #     ports:
-    #       - 5432:5432
-
-    #     cloudsql-proxy:
-    #       iamge: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0
-    # docker run -d --net host --name gce-cloudsql-proxy --restart on-failure
-    # --expose 5432  --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+    # Service containers to run with build job
+    services:
+      # Run ephemeral Postgres instance and expose on 0.0.0.0:6432 for testing
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_DB: ${{ vars.APP_DB_NAME }}
+          POSTGRES_USER: ${{ vars.APP_DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6432:5432
 
     steps:
       - uses: actions/checkout@v4
@@ -48,7 +44,7 @@ jobs:
         with:
           machine: github.com
           login: x-oauth-basic
-          password: ${{ secrets.GH_TOKEN }} // this is used to allow checkout to pull private repos
+          password: ${{ secrets.GH_TOKEN }}
 
       - name: Google auth
         id: auth
@@ -60,23 +56,16 @@ jobs:
           credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
           service_account: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
 
+      # Connect to persistent Postgres instance in Cloud SQL
       - name: Google Cloud SQL Proxy
         run: |-
           docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
 
+      # Appears to be a race condition, as the check below fails without it? Deprecate
       - name: Install DBmate
         run: |-
           sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
           sudo chmod +x /usr/local/bin/dbmate
-
-      - name: Install DBmate
-        run: |-
-          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
-          sudo chmod +x /usr/local/bin/dbmate
-
-      - name: Check Google Cloud SQL Proxy
-        run: |-
-          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # # # Auth with the GCloud Service Key
       # # - id: "auth"
@@ -102,9 +91,11 @@ jobs:
           project_id: ${{ env.PROJECT_ID }}
           version: ">= 470.0.0"
 
-      # Report GCloud Info
+      # Report GCloud and Psql Info
       - name: "Check GCloud CLI"
-        run: "gcloud info"
+        run: |-
+          gcloud info
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # Setup Go
       - name: Set up Go
@@ -120,7 +111,11 @@ jobs:
       - name: Local Test
         run: go test -v ./...
         env:
-          PGPASSWORD: postgres
+          APP_DB_HOST: postgres
+          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          APP_DB_PORT: 6432
 
       # Setup Env for Container and Release
       - name: "Set Environment"
@@ -141,8 +136,11 @@ jobs:
           who-to-greet: "Gary MacDonald"
           mode: test
         env:
-          PGUSER: postgres
-          PGPASSWORD: postgres
+          APP_DB_HOST: postgres
+          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          APP_DB_PORT: 6432
 
       # Configure /home/runner/.docker/config.json - Deprecate?
       - name: Configure Docker Client

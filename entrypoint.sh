@@ -16,10 +16,10 @@ if [ "$2" = "test" ]; then
     psql --version
 
     PGPASS=${APP_DB_PASSWORD}
-    psql -Atx "hostaddr=${APP_DB_HOST} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
+    psql -Atx "hostaddr=${APP_DB_HOST} port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
 
     PGPASS=${APP_DB_PASSWORD}
-    psql "hostaddr=35.242.149.106 dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
+    psql "hostaddr=35.242.149.106 port=${APP_DB_PORT} dbname=${APP_DB_NAME} user=${APP_DB_USERNAME} sslmode=disable" -c 'select current_database()'
 
     /usr/local/bin/go test .
 

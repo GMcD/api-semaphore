@@ -40,11 +40,12 @@ func GetEnv(key, fallback string) string {
 
 func GetDsn() string {
 	host := GetEnv("APP_DB_HOST", "0.0.0.0")
+	port := GetEnv("APP_DB_PORT", "5432")
 	user := GetEnv("APP_DB_USERNAME", "postgres")
 	password := GetEnv("APP_DB_PASSWORD", "postgres")
 	dbname := GetEnv("APP_DB_NAME", "postgres")
 	connectionString :=
-		fmt.Sprintf("host=%s user=%s password=%s dbname=%s sslmode=disable", host, user, password, dbname)
+		fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, password, dbname)
 	log.Print(connectionString)
 	return connectionString
 }
