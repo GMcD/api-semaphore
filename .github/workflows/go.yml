@@ -20,7 +20,7 @@ jobs:
 
     # Service containers to run with build job
     services:
-      # Run ephemeral Postgres instance and expose on 0.0.0.0:6432 for testing
+      # Run ephemeral Postgres instance and expose on 0.0.0.0:6432 and postgres:6432 for testing
       postgres:
         image: postgres
         env:
@@ -107,11 +107,10 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      # Test Local
+      # Local Test on Runner against 0.0.0.0:6432
       - name: Local Test
         run: go test -v ./...
         env:
-          APP_DB_HOST: postgres
           APP_DB_NAME: ${{ vars.APP_DB_NAME }}
           APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
           APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
@@ -129,7 +128,7 @@ jobs:
         run: |
           docker build -t ${{ env.GCR_NAME }} .
 
-      - name: Container Test
+      - name: Container Test against postgres:6432
         uses: ./.github/actions
         id: container
         with:
