@@ -18,22 +18,22 @@ jobs:
       contents: "read"
       id-token: "write"
 
-    # Service containers to run with `container-job`
-    services:
-      postgres:
-        image: postgres
-        env:
-          POSTGRES_HOST: postgres
-          POSTGRES_DB: postgres
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
+    # # Service containers to run with `container-job`
+    # services:
+    #   postgres:
+    #     image: postgres
+    #     env:
+    #       POSTGRES_HOST: postgres
+    #       POSTGRES_DB: postgres
+    #       POSTGRES_USER: postgres
+    #       POSTGRES_PASSWORD: postgres
+    #     options: >-
+    #       --health-cmd pg_isready
+    #       --health-interval 10s
+    #       --health-timeout 5s
+    #       --health-retries 5
+    #     ports:
+    #       - 5432:5432
 
     steps:
       - uses: actions/checkout@v4
@@ -47,9 +47,9 @@ jobs:
       # Start GCloud SQL Proxy, and test. Note, APP_DB_HOST is in effect localhost:5433 here, as we are running the proxy to instance ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
       - name: Google Cloud SQL Proxy
         run: |-
-          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5433 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.7.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ env.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
           docker ps
-          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=localhost port=5433 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=localhost port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
 
       # Setup GCloud
       - name: Configure GCloud
