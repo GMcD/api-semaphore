@@ -1,5 +1,5 @@
-# Use Go v1.21
-FROM golang:1.21
+# Use Go v1.22
+FROM golang:1.22
 
 # Add Postgres Client
 RUN apt-get update && apt-get install -y postgresql-client
