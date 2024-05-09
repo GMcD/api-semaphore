@@ -64,10 +64,21 @@ func TestGetProductByName(t *testing.T) {
 	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
-	req, _ := http.NewRequest("GET", "/productbyname/Tesla/", nil)
+	const tesla = "Tesla"
+	teslaNameUrl := fmt.Sprintf("/productbyname/%v/", tesla)
+
+	req, _ := http.NewRequest("GET", teslaNameUrl, nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
+	if response.Code != http.StatusOK {
+		t.Errorf("Failed to retrieve: '%v'", tesla)
+	}
+	var originalProduct map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &originalProduct)
+	if originalProduct["name"].(string) != tesla {
+		t.Errorf("Failed to retrieve details of '%v'", tesla)
+	}
 }
 
 func TestUpdateProduct(t *testing.T) {

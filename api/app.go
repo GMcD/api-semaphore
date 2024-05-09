@@ -101,10 +101,10 @@ func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	p := Product{ID: id}
-	_, err = p.GetProduct(a.DB, id)
+	p := &Product{}
+	p, err = p.GetProduct(a.DB, id)
 	if err != nil {
-		respondWithError(w, http.StatusNotFound, "Product ID not found")
+		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Product '%v' not found", id))
 		return
 	}
 
@@ -123,7 +123,7 @@ func (a *App) getProductByName(w http.ResponseWriter, r *http.Request) {
 	p := &Product{}
 	p, err2 := p.GetProductByName(a.DB, name)
 	if err2 != nil {
-		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Product '%v' not found", name))
+		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Product named '%v' not found", name))
 		return
 	}
 
