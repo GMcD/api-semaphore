@@ -14,9 +14,10 @@ ENV APP_DB_PASSWORD $INPUT_APP_DB_PASSWORD
 # Set destination for COPY
 WORKDIR /app
 
-# Download Go modules
+# Download Go modules and sub modules
 COPY go.mod go.sum ./
 COPY api/go.mod api/go.sum ./api/
+COPY env/go.mod env/go.sum ./env/
 RUN go mod download
 
 # Copy the .env
