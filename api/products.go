@@ -1,14 +1,15 @@
 package api
 
 import (
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 // Product struct
 type Product struct {
-	ID    int     `json:"id"`
-	Name  string  `json:"name"`
-	Price float64 `json:"price"`
+	ID    uuid.UUID `gorm:"type:uuid;default:gen_random_uuid();index" json:"id"`
+	Name  string    `json:"name"`
+	Price float64   `json:"price"`
 }
 
 // Count Products
@@ -36,9 +37,20 @@ func (p *Product) GetProducts(db *gorm.DB, limit int, offset int) []Product {
 }
 
 // Get Product or nil from Database
-func (p *Product) GetProduct(db *gorm.DB, id int) (*Product, error) {
+func (p *Product) GetProduct(db *gorm.DB, uuid uuid.UUID) (*Product, error) {
 	var product Product
-	gdb := db.First(&product, "ID = ?", id)
+	gdb := db.First(&product, "ID = ?", uuid)
+	if gdb.Error != nil {
+		return nil, gdb.Error
+	} else {
+		return &product, nil
+	}
+}
+
+// Get Product or nil from Database
+func (p *Product) GetProductByName(db *gorm.DB, name string) (*Product, error) {
+	var product Product
+	gdb := db.First(&product, "Name = ?", name)
 	if gdb.Error != nil {
 		return nil, gdb.Error
 	} else {

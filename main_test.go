@@ -3,18 +3,18 @@ package main_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
-	"github.com/GMcD/api-semaphore"
 	"github.com/GMcD/api-semaphore/api"
 )
 
 var a api.App
 
 func TestEmptyTable(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	req, _ := http.NewRequest("GET", "/products", nil)
@@ -28,23 +28,17 @@ func TestEmptyTable(t *testing.T) {
 }
 
 func TestGetNonExistentProduct(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
-	req, _ := http.NewRequest("GET", "/product/11", nil)
+	req, _ := http.NewRequest("GET", "/productbyname/fred", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusNotFound, response.Code)
-
-	var m map[string]string
-	json.Unmarshal(response.Body.Bytes(), &m)
-	if m["error"] != "Product ID not found" {
-		t.Errorf("Expected the 'error' key of the response to be set to 'Product ID not found'. Got '%s'", m["error"])
-	}
 }
 
 func TestCreateProduct(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	var jsonStr = []byte(`{"name":"test product", "price": 11.22}`)
@@ -66,31 +60,37 @@ func TestCreateProduct(t *testing.T) {
 	}
 }
 
-func TestGetProduct(t *testing.T) {
-	teardownSuite := setupSuite(t)
+func TestGetProductByName(t *testing.T) {
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
-	main.AddProducts(a, 1)
-
-	req, _ := http.NewRequest("GET", "/product/1", nil)
+	req, _ := http.NewRequest("GET", "/productbyname/Tesla/", nil)
 	response := executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 }
 
 func TestUpdateProduct(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
-	main.AddProducts(a, 1)
+	const tesla = "Tesla"
+	teslaNameUrl := fmt.Sprintf("/productbyname/%v/", tesla)
 
-	req, _ := http.NewRequest("GET", "/product/1", nil)
+	// const ford = "Ford"
+	// ford_url := fmt.Sprintf("/productbyname/%v/", ford)
+
+	req, _ := http.NewRequest("GET", teslaNameUrl, nil)
 	response := executeRequest(req)
+	if response.Code != http.StatusOK {
+		t.Errorf("Failed to retrieve: '%v'", tesla)
+	}
 	var originalProduct map[string]interface{}
 	json.Unmarshal(response.Body.Bytes(), &originalProduct)
 
-	var jsonStr = []byte(`{"name":"test product - updated name", "price": 11.22}`)
-	req, _ = http.NewRequest("PUT", "/product/1", bytes.NewBuffer(jsonStr))
+	teslaIdUrl := fmt.Sprintf("/product/%v/", originalProduct["id"].(string))
+	var jsonStr = []byte(`{"name":"ford", "price": 11.22}`)
+	req, _ = http.NewRequest("PUT", teslaIdUrl, bytes.NewBuffer(jsonStr))
 	req.Header.Set("Content-Type", "application/json")
 
 	response = executeRequest(req)
@@ -114,21 +114,30 @@ func TestUpdateProduct(t *testing.T) {
 }
 
 func TestDeleteProduct(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
-	main.AddProducts(a, 1)
+	tesla := "Tesla"
 
-	req, _ := http.NewRequest("GET", "/product/1", nil)
+	teslaNameUrl := fmt.Sprintf("/productbyname/%v/", tesla)
+
+	req, _ := http.NewRequest("GET", teslaNameUrl, nil)
+
 	response := executeRequest(req)
-	checkResponseCode(t, http.StatusOK, response.Code)
+	if response.Code != http.StatusOK {
+		t.Errorf("Failed to retrieve: '%v'", tesla)
+	}
+	var originalProduct map[string]interface{}
+	json.Unmarshal(response.Body.Bytes(), &originalProduct)
 
-	req, _ = http.NewRequest("DELETE", "/product/1", nil)
+	teslaIdUrl := fmt.Sprintf("/product/%v/", originalProduct["id"].(string))
+
+	req, _ = http.NewRequest("DELETE", teslaIdUrl, nil)
 	response = executeRequest(req)
 
 	checkResponseCode(t, http.StatusOK, response.Code)
 
-	req, _ = http.NewRequest("GET", "/product/1", nil)
+	req, _ = http.NewRequest("GET", teslaNameUrl, nil)
 	response = executeRequest(req)
 	checkResponseCode(t, http.StatusNotFound, response.Code)
 }

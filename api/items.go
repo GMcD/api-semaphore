@@ -5,7 +5,7 @@ import "gorm.io/gorm"
 // Item Struct
 type Item struct {
 	gorm.Model
-	Description string `json:"description"`
+	Description string `gorm:"index" json:"description"`
 	Price       uint   `json:"price"`
 }
 

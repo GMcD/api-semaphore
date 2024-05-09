@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/GMcD/api-semaphore/api"
+	"github.com/google/uuid"
 )
 
 // gorm database instance
@@ -14,10 +15,10 @@ var o api.Orm
 const records = 3
 
 // Set Up Gorm Database -> Should be Migration
-func setupSuite(t *testing.T) func(t *testing.T) {
-	t.Log("Initializing App routes")
+func SetupSuite(t *testing.T) func(t *testing.T) {
+	// t.Log("Initializing App routes")
 	a.Initialize()
-	t.Log("Setting up database for tests")
+	// t.Log("Setting up database for tests")
 	o.SetupDb()
 
 	// Seed Item Records
@@ -30,14 +31,16 @@ func setupSuite(t *testing.T) func(t *testing.T) {
 	//	o.CreateItem(&api.Item{Description: "Trousers", Price: 150})
 
 	// Seed Product Records
-	car := &api.Product{ID: 1, Name: "Tesla", Price: 30000}
+	u1, _ := uuid.NewRandom()
+	car := &api.Product{ID: u1, Name: "Tesla", Price: 30000}
 	car.CreateProduct(o.DB)
-	lorry := &api.Product{ID: 2, Name: "Peterbilt", Price: 300000}
+	u2, _ := uuid.NewRandom()
+	lorry := &api.Product{ID: u2, Name: "Peterbilt", Price: 300000}
 	lorry.CreateProduct(o.DB)
 
 	// Close Connection
 	return func(t *testing.T) {
-		t.Log("Tearing down database")
+		// t.Log("Tearing down database")
 		api.Item{}.HardDeleteAll(o.DB)
 		api.Product{}.HardDeleteAll(o.DB)
 		// Probably Unneccesary

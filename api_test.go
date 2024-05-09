@@ -8,7 +8,7 @@ import (
 )
 
 func TestOrmSetup(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	desc := "Coat"
@@ -22,7 +22,7 @@ func TestOrmSetup(t *testing.T) {
 }
 
 func TestSoftDeleteAll(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	cnt := api.Item{}.Count(o.DB)
@@ -37,7 +37,7 @@ func TestSoftDeleteAll(t *testing.T) {
 }
 
 func TestGetItems(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	item := &api.Item{}
@@ -49,7 +49,7 @@ func TestGetItems(t *testing.T) {
 }
 
 func TestGetItem(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	coat := &api.Item{}
@@ -62,7 +62,7 @@ func TestGetItem(t *testing.T) {
 }
 
 func TestCreateItem(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	hat := &api.Item{Description: "Hat", Price: 98}
@@ -78,7 +78,7 @@ func TestCreateItem(t *testing.T) {
 }
 
 func TestUpdateItem(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	coat := &api.Item{}
@@ -97,7 +97,7 @@ func TestUpdateItem(t *testing.T) {
 }
 
 func TestDeleteItem(t *testing.T) {
-	teardownSuite := setupSuite(t)
+	teardownSuite := SetupSuite(t)
 	defer teardownSuite(t)
 
 	hat := &api.Item{Description: "Hat", Price: 98}

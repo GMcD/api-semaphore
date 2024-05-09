@@ -23,6 +23,6 @@ func (o *Orm) SetupDb() {
 	connectionString := GetDsn()
 	o.GetGormDb(connectionString)
 
-	o.DB.AutoMigrate(&Item{})
-	o.DB.AutoMigrate(&Product{})
+	o.DB.Migrator().DropTable(&Item{}, &Product{})
+	o.DB.AutoMigrate(&Item{}, &Product{})
 }

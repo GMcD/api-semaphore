@@ -46,6 +46,6 @@ func GetDsn() string {
 	password := GetEnv("APP_DB_PASSWORD", "postgres")
 	connectionString :=
 		fmt.Sprintf("host=%s port=%s dbname=%s user=%s password=%s sslmode=disable", host, port, dbname, user, password)
-	log.Print(connectionString)
+	// log.Print(connectionString)
 	return connectionString
 }

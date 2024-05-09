@@ -1,12 +1,14 @@
 package api
 
 import (
+	"fmt"
 	"log"
 
 	"encoding/json"
 	"net/http"
 	"strconv"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
@@ -27,15 +29,8 @@ func (a *App) Initialize() {
 	o.SetupDb()
 	a.DB = o.DB
 
-	// connectionString := GetDsn()
-
-	// var err error
-	// a.DB, err = sql.Open("postgres", connectionString)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	a.Router = mux.NewRouter()
+	a.Router.Use(enableCORS)
 
 	a.initializeRoutes()
 }
@@ -45,9 +40,10 @@ func (a *App) initializeRoutes() {
 	a.Router.HandleFunc("/", a.sayHello).Methods("GET")
 	a.Router.HandleFunc("/products", a.getProducts).Methods("GET")
 	a.Router.HandleFunc("/product", a.createProduct).Methods("POST")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.getProduct).Methods("GET")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.updateProduct).Methods("PUT")
-	a.Router.HandleFunc("/product/{id:[0-9]+}", a.deleteProduct).Methods("DELETE")
+	a.Router.HandleFunc("/productbyname/{name}/", a.getProductByName).Methods("GET")
+	a.Router.HandleFunc("/product/{id}/", a.getProduct).Methods("GET")
+	a.Router.HandleFunc("/product/{id}/", a.updateProduct).Methods("PUT")
+	a.Router.HandleFunc("/product/{id}/", a.deleteProduct).Methods("DELETE")
 }
 
 // Run the App on the provided address
@@ -99,7 +95,7 @@ func (a *App) getProducts(w http.ResponseWriter, r *http.Request) {
 // Get a product
 func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid product ID")
 		return
@@ -109,6 +105,25 @@ func (a *App) getProduct(w http.ResponseWriter, r *http.Request) {
 	_, err = p.GetProduct(a.DB, id)
 	if err != nil {
 		respondWithError(w, http.StatusNotFound, "Product ID not found")
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, p)
+}
+
+// Get a product by name
+func (a *App) getProductByName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	name := vars["name"]
+	if name == "" {
+		respondWithError(w, http.StatusBadRequest, fmt.Sprintf("Invalid product name : '%v'", name))
+		return
+	}
+
+	p := &Product{}
+	p, err2 := p.GetProductByName(a.DB, name)
+	if err2 != nil {
+		respondWithError(w, http.StatusNotFound, fmt.Sprintf("Product '%v' not found", name))
 		return
 	}
 
@@ -133,9 +148,9 @@ func (a *App) createProduct(w http.ResponseWriter, r *http.Request) {
 // Update a Product
 func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	uuid, err := uuid.Parse(vars["id"])
 	if err != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid Product ID")
+		respondWithError(w, http.StatusBadRequest, "Invalid Product UUID")
 		return
 	}
 
@@ -146,7 +161,7 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	p.ID = id
+	p.ID = uuid
 
 	p.UpdateProduct(a.DB, &p)
 
@@ -156,7 +171,7 @@ func (a *App) updateProduct(w http.ResponseWriter, r *http.Request) {
 // Delete a Product
 func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["id"])
+	id, err := uuid.Parse(vars["id"])
 	if err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Product ID")
 		return
@@ -166,4 +181,25 @@ func (a *App) deleteProduct(w http.ResponseWriter, r *http.Request) {
 	p.DeleteProduct(a.DB)
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+// Enable CORS
+func enableCORS(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		// Allow requests from any origin
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Allow specified HTTP methods
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+
+		// Allow specified headers
+		w.Header().Set("Access-Control-Allow-Headers", "Origin, Content-Type, Accept")
+
+		// Continue with the next handler
+		next.ServeHTTP(w, r)
+
+	})
+
 }
