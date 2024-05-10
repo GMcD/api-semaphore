@@ -21,13 +21,13 @@ echo Mode: ${INPUT_MODE}
 # Check Psql Version and Db Connectivity
 /usr/local/go/bin/go version
 psql --version
-PGPASS=${INPUT_APP_DB_PASSWORD}
+PGPASSWORD=${INPUT_APP_DB_PASSWORD}
 psql -Atx "host=${INPUT_APP_DB_HOST} port=${INPUT_APP_DB_PORT} dbname=${INPUT_APP_DB_NAME} user=${INPUT_APP_DB_USERNAME} sslmode=disable" -c 'select current_database()' 
 
 if [ "${INPUT_MODE}" = "test" ]; then
     echo "Testing Mode..."
 
-    /usr/local/go/bin/go test .
+    cd module && /usr/local/go/bin/go test .
 
     exit $?
 fi
