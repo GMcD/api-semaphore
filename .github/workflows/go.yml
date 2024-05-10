@@ -87,15 +87,15 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: "1.22"
 
       # Build the Module
-      - name: Build
-        run: go build -v ./...
+      - name: Build Module
+        run: cd module && go build -v ./...
 
       # Local Test on Runner against 0.0.0.0:6432
       - name: Local Test
-        run: go test -v ./...
+        run: cd module && go test -v ./...
         env:
           APP_DB_HOST: 0.0.0.0
           APP_DB_NAME: ${{ vars.APP_DB_NAME }}
@@ -113,7 +113,7 @@ jobs:
       # Build and Tag Container for GCR
       - name: Container Build
         run: |
-          docker build -t ${{ env.GCR_NAME }} .
+          cd module && docker build -t ${{ env.GCR_NAME }} .
 
       # Using internal docker networking, the test database is isolated on postgres:5432
       - name: Container Test against postgres:5432
