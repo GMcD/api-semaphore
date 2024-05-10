@@ -113,7 +113,7 @@ jobs:
       # Build and Tag Container for GCR
       - name: Container Build
         run: |
-          cd module && docker build -t ${{ env.GCR_NAME }} .
+          cd module && docker build -t ${{ env.GCR_NAME }} ..
 
       # Using internal docker networking, the test database is isolated on postgres:5432
       - name: Container Test against postgres:5432
