@@ -14,18 +14,13 @@ ENV APP_DB_PASSWORD $INPUT_APP_DB_PASSWORD
 # Set destination for COPY
 WORKDIR /app
 
+# Copy the code over
+COPY module/ ./
 # Download Go modules and sub modules
-COPY go.mod go.sum ./
-COPY api/go.mod api/go.sum ./api/
-COPY env/go.mod env/go.sum ./env/
 RUN go mod download
 
 # Copy the .env
 COPY .env ./
-
-# Copy the source code.
-COPY *.go ./
-COPY api/*.go ./api/
 
 # Build
 # RUN CGO_ENABLED=0 GOOS=linux go build -o /action-api-ping
