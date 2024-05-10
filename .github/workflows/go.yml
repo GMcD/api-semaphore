@@ -108,7 +108,7 @@ jobs:
         run: |-
           echo "GCR_NAME=${{ vars.REPOSITORY }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}" >> ${GITHUB_ENV}
           echo "RELEASE_NAME=${{ vars.IMAGE_NAME }}-${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}" >> ${GITHUB_ENV}
-          echo "REGION=${{ env.REGION }}" >> ${GITHUB_ENV}
+          echo "REGION=${{ vars.REGION }}" >> ${GITHUB_ENV}
 
       # Build and Tag Container for GCR
       - name: Container Build
