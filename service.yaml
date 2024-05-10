@@ -6,8 +6,8 @@ metadata:
     app: dockerfile-image
 spec:
   ports:
-  - port: 8100
-    protocol: TCP
+    - port: 8100
+      protocol: TCP
   clusterIP: None
   selector:
     app: dockerfile-image
@@ -29,5 +29,8 @@ spec:
         app: dockerfile-image
     spec:
       containers:
-      - name: dockerfile-image
-        image: dockerfile-image
+        - name: dockerfile-image
+          image: dockerfile-image
+          env:
+            - name: APP_DB_HOST
+              value: fred
