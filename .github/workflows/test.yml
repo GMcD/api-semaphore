@@ -1,19 +1,16 @@
-# This workflow will build a golang project
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+# Test, Tag, and PR the Test Branch to Main
 
-name: Go
+name: Test
 
 on:
   push:
-    branches: ["main"]
-  pull_request:
-    branches: ["main"]
+    branches: ["test"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
-    # Permissions, for Google Auth
+    # Permissions, for Google Auth, Tagging etc
     permissions:
       contents: "write"
       id-token: "write"
@@ -141,25 +138,6 @@ jobs:
           gcloud version
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
           docker push ${{ env.GCR_NAME }}
-
-      # # Create a Release
-      # - name: "Create Cloud Deploy Release"
-      #   uses: "google-github-actions/create-cloud-deploy-release@v0"
-      #   with:
-      #     delivery_pipeline: ${{ vars.IMAGE_NAME }}
-      #     name: "${{ env.RELEASE_NAME }}"
-      #     region: "${{ vars.REGION }}"
-      #     description: "${{ env.GITHUB_COMMIT_MSG }}"
-      #     images: "app=${{ env.GCR_NAME }}"
-
-      # skaffold_file: "config/skaffold.yaml"
-
-      # Upload Build Artifacts to Github - Deprecate
-      - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ vars.IMAGE_NAME }}-${{ github.run_number }}
-          path: ${{ github.workspace }}
 
       # Create Tag for successful build
       - name: Create tag

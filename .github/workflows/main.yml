@@ -1,0 +1,176 @@
+# Deploy the Main Branch to GCloud
+
+name: Main
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    # Permissions, for Google Auth
+    permissions:
+      contents: "write"
+      id-token: "write"
+
+    # Service containers to run with build job
+    services:
+      # Run ephemeral Postgres instance and expose on 0.0.0.0:6432 and postgres:5432 for testing
+      postgres:
+        image: postgres
+        env:
+          POSTGRES_HOST: postgres
+          POSTGRES_DB: ${{ vars.APP_DB_NAME }}
+          POSTGRES_USER: ${{ vars.APP_DB_USERNAME }}
+          POSTGRES_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6432:5432
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Apply netrc creds with direct input
+        uses: little-core-labs/netrc-creds@master
+        with:
+          machine: github.com
+          login: x-oauth-basic
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Google auth
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          token_format: "access_token"
+          access_token_lifetime: "120s"
+          create_credentials_file: true
+          credentials_json: "${{ secrets.GCLOUD_SERVICE_KEY }}"
+          service_account: "${{ secrets.GCP_SERVICE_ACCOUNT }}"
+
+      # Connect to persistent Postgres instance in Cloud SQL
+      - name: Google Cloud SQL Proxy
+        run: |-
+          docker run -d --net host --name gce-cloudsql-proxy --restart on-failure --expose 5432 gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.11.0 --run-connection-test -t ${{steps.auth.outputs.access_token}} ${{ vars.PROJECT_ID }}:${{ vars.REGION }}:${{ vars.CLOUD_SQL_INSTANCE }}
+
+      # Appears to be a race condition, as the check below fails without it? Deprecate
+      - name: Install DBmate
+        run: |-
+          sudo curl -fsSL -o /usr/local/bin/dbmate https://github.com/amacneil/dbmate/releases/latest/download/dbmate-linux-amd64
+          sudo chmod +x /usr/local/bin/dbmate
+
+      # Setup GCloud
+      - name: Configure GCloud
+        env:
+          PROJECT_ID: ${{ env.PROJECT_ID }}
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          service_account_key: ${{ secrets.GCLOUD_SERVICE_KEY }}
+          project_id: ${{ env.PROJECT_ID }}
+          version: ">= 470.0.0"
+
+      # Report GCloud and Psql Info
+      - name: "Check GCloud CLI"
+        run: |-
+          gcloud info
+          PGPASSWORD=${{ secrets.APP_DB_PASSWORD }} psql "host=0.0.0.0 port=5432 dbname=${{ vars.APP_DB_NAME }} user=${{ vars.APP_DB_USERNAME }} sslmode=disable" -c 'select current_database()'
+
+      # Setup Go
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+
+      # Build the Module
+      - name: Build Module
+        run: cd module && go build -v ./...
+
+      # Local Test on Runner against 0.0.0.0:6432
+      - name: Local Test
+        run: cd module && go test -v ./...
+        env:
+          APP_DB_HOST: 0.0.0.0
+          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          APP_DB_PORT: 6432
+
+      # Setup Env for Container and Release
+      - name: "Set Environment"
+        run: |-
+          echo "GCR_NAME=${{ vars.REPOSITORY }}/${{ vars.IMAGE_NAME }}:${{ github.run_number }}" >> ${GITHUB_ENV}
+          echo "RELEASE_NAME=${{ vars.IMAGE_NAME }}-${GITHUB_SHA::7}-${GITHUB_RUN_NUMBER}" >> ${GITHUB_ENV}
+          echo "REGION=${{ vars.REGION }}" >> ${GITHUB_ENV}
+
+      # Build and Tag Container for GCR
+      - name: Container Build
+        run: |
+          cd module && docker build -t ${{ env.GCR_NAME }} ..
+
+      # Using internal docker networking, the test database is isolated on postgres:5432
+      - name: Container Test against postgres:5432
+        uses: ./.github/actions
+        id: container
+        with:
+          greetings: "Gary MacDonald"
+          mode: test
+          APP_DB_HOST: postgres
+          APP_DB_NAME: ${{ vars.APP_DB_NAME }}
+          APP_DB_USERNAME: ${{ vars.APP_DB_USERNAME }}
+          APP_DB_PASSWORD: ${{ secrets.APP_DB_PASSWORD }}
+          APP_DB_PORT: 5432
+
+      # Configure /home/runner/.docker/config.json - Deprecate?
+      - name: Configure Docker Client
+        run: |-
+          gcloud auth configure-docker # --quiet
+          gcloud auth configure-docker ${{ vars.REPOSITORY }} # --quiet
+
+      # tag docker image to gcr image format then push to gcr
+      - name: Push Docker Image to GCR
+        run: |-
+          docker image ls | head -2 | tail -1
+          gcloud version
+          gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
+          docker push ${{ env.GCR_NAME }}
+
+      # # Create a Release
+      # - name: "Create Cloud Deploy Release"
+      #   uses: "google-github-actions/create-cloud-deploy-release@v0"
+      #   with:
+      #     delivery_pipeline: ${{ vars.IMAGE_NAME }}
+      #     name: "${{ env.RELEASE_NAME }}"
+      #     region: "${{ vars.REGION }}"
+      #     description: "${{ env.GITHUB_COMMIT_MSG }}"
+      #     images: "app=${{ env.GCR_NAME }}"
+
+      # skaffold_file: "config/skaffold.yaml"
+
+      # Upload Build Artifacts to Github - Deprecate
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.IMAGE_NAME }}-${{ github.run_number }}
+          path: ${{ github.workspace }}
+
+      # Create Tag for successful build
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/v0.0.${{ github.run_number }}',
+              sha: context.sha
+            })
+
+      # Print Logs on failure
+      - name: Print logs on onfailure
+        if: ${{ failure() }}
+        run: docker logs gce-cloudsql-proxy
