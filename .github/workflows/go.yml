@@ -15,7 +15,7 @@ jobs:
 
     # Permissions, for Google Auth
     permissions:
-      contents: "read"
+      contents: "write"
       id-token: "write"
 
     # Service containers to run with build job
