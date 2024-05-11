@@ -142,17 +142,17 @@ jobs:
           gcloud auth print-access-token | docker login -u oauth2accesstoken --password-stdin ${{ vars.REPOSITORY }}
           docker push ${{ env.GCR_NAME }}
 
-      # Create a Release
-      - name: "Create Cloud Deploy Release"
-        uses: "google-github-actions/create-cloud-deploy-release@v0"
-        with:
-          delivery_pipeline: ${{ vars.IMAGE_NAME }}
-          name: "${{ env.RELEASE_NAME }}"
-          region: "${{ vars.REGION }}"
-          description: "${{ env.GITHUB_COMMIT_MSG }}"
-          images: "app=${{ env.GCR_NAME }}"
+      # # Create a Release
+      # - name: "Create Cloud Deploy Release"
+      #   uses: "google-github-actions/create-cloud-deploy-release@v0"
+      #   with:
+      #     delivery_pipeline: ${{ vars.IMAGE_NAME }}
+      #     name: "${{ env.RELEASE_NAME }}"
+      #     region: "${{ vars.REGION }}"
+      #     description: "${{ env.GITHUB_COMMIT_MSG }}"
+      #     images: "app=${{ env.GCR_NAME }}"
 
-          # skaffold_file: "config/skaffold.yaml"
+      # skaffold_file: "config/skaffold.yaml"
 
       # Upload Build Artifacts to Github - Deprecate
       - name: Upload Build Artifacts
