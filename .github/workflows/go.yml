@@ -161,9 +161,17 @@ jobs:
           name: ${{ vars.IMAGE_NAME }}-${{ github.run_number }}
           path: ${{ github.workspace }}
 
-      # Use the output from the `container` step
-      - name: Container Build Output
-        run: echo "The time was ${{ steps.container.outputs.time }}"
+      # Create Tag for successful build
+      - name: Create tag
+        uses: actions/github-script@v5
+        with:
+          script: |
+            github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: 'refs/tags/${{ github.run_number }}',
+              sha: context.sha
+            })
 
       # Print Logs on failure
       - name: Print logs on onfailure
