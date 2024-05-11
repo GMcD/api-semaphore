@@ -154,6 +154,8 @@ jobs:
       # PR to Main
       - name: create pull request
         run: gh pr create -B main -H test --title 'Merge test v0.0.${{ github.run_number }} into main' --body 'Created by Test Workflow'
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       # Print Logs on failure
       - name: Print logs on onfailure
