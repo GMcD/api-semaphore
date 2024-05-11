@@ -151,6 +151,10 @@ jobs:
               sha: context.sha
             })
 
+      # PR to Main
+      - name: create pull request
+        run: gh pr create -B main -H test --title 'Merge test v0.0.${{ github.run_number }} into main' --body 'Created by Test Workflow'
+
       # Print Logs on failure
       - name: Print logs on onfailure
         if: ${{ failure() }}
