@@ -3,6 +3,7 @@
 #
 tmp/
 .secrets
+go-secrets.tfvars
 
 ###################################
 ## Terraform

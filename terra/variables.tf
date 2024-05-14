@@ -44,6 +44,52 @@ variable "app_db_password" {
   type        = string
 }
 
-# variable "jwt_key" {
-#   type = string
-# }
+variable "system-email" {
+  description = "System Email"
+  default     = "system@projectscapa.com"
+}
+
+//
+// DNS
+//
+variable "root-zone" {
+  description = "Domain Name for Godaddy"
+  default     = ""
+}
+
+variable "project-zone" {
+  description = "Environnment for Project"
+  default     = ""
+}
+
+variable "project_name" {
+  description = "Project Name"
+  default     = ""
+}
+
+variable "env-name" {
+  description = "Environment Name for Resource Tagging."
+  default     = "dev"
+}
+
+variable "gd_customer" {
+  description = "GoDaddy Customer Account"
+  default     = "35481312"
+}
+variable "gd_name" {
+  description = "GoDaddy API key Name"
+  default     = ""
+}
+variable "gd_apikey" {
+  description = "GoDaddy API key"
+  default     = ""
+}
+variable "gd_secret" {
+  description = "GoDaddy API secret"
+  default     = ""
+}
+
+variable "repository" {
+  description = "Artifactory Repository"
+  default     = ""
+}

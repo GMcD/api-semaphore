@@ -27,27 +27,23 @@ commit:		## Short hand for git Add and Commit
 	git add .; git commit -m ${ARGUMENT}; git push
 
 ######################
-## MiniKube
-######################
-
-dashboard:	## Minikube Dashboard
-	minikube dashboard
-
-######################
 ## Terraform
 ######################
 
-init:		## Init for Terraform Modules
-	terraform init -upgrade
-
-plan:	## Plan for Terraform Modules
-	terraform plan
+init:		## Init for Terraform Modules # -upgrade?
+	terraform init
 
 validate:	## Validate Configuration Files
 	terraform validate
 
+plan:	## Plan for Terraform Modules
+	terraform plan --var-file ../go-cfg.tfvars --var-file ../go-secrets.tfvars
+
 apply:		## Apply for Terraform Modules
-	terraform apply
+	terraform apply --var-file ../go-cfg.tfvars --var-file ../go-secrets.tfvars
+
+destroy:		## Destroy for Terraform Modules
+	terraform destroy --var-file ../go-cfg.tfvars
 
 sa_pk:		## Service Account Private Key
 	@terraform output -json | jq -r '.service_account_private_key.value' | base64 --decode

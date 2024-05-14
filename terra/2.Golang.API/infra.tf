@@ -2,7 +2,7 @@
 resource "google_sql_database_instance" "instance" {
   name                = var.app_db_instance
   region              = var.region
-  database_version    = "POSTGRES_16"
+  database_version    = "POSTGRES_15"
   deletion_protection = false
   settings {
     tier = "db-f1-micro"
@@ -33,10 +33,6 @@ resource "google_cloud_run_service" "run" {
         ports {
           container_port = 8100
         }
-        # env {
-        #   name  = "JWT_KEY"
-        #   value = var.jwt_key
-        # }
         env {
           name  = "DB_URL"
           value = "postgresql://${var.app_db_username}:${var.app_db_password}@/${var.app_db_name}?host=/cloudsql/${google_sql_database_instance.instance.connection_name}"
