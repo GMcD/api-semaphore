@@ -1,12 +1,21 @@
 # API Semaphore
 
+## Terraform Infrastructure Deployment
+
+```mermaid
+sequenceDiagram
+create participant Terraform.State
+0.Bucket->>Terraform.State: Remote State Store
+1.State->>Terraform.State: Create Backend
+```
+
+## Github Workflow Action Sequence
+
 The diagram actors are described as
 
 - Commit.\<Branch\> - a commit to that branch
 - Action.\<Branch\> - a workflow action to be taken on that commit
 - Google.Cloud - gcloud client actions
-
-## Workflow Diagram
 
 ```mermaid
 sequenceDiagram
