@@ -1,7 +1,5 @@
 # API Semaphore
 
-Hello
-
 ## Terraform Infrastructure Deployment
 
 ```mermaid

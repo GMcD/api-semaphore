@@ -8,7 +8,7 @@ import (
 )
 
 // Move to secret store
-const GH_token = "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"
+const GH_token = "ghp_***"
 
 // Move to input?
 const GH_user = "GMcD"
@@ -90,7 +90,7 @@ func (*Variables) GetOrganizations() ([]*github.Organization, error) {
 
 	orgs, _, err := client.Organizations.List(context.Background(), GH_user, nil)
 	if err != nil {
-		fmt.Errorf("Cannot connect to Github as %v: %v", GH_user, err)
+		err = fmt.Errorf("Cannot connect to Github as %v: %v", GH_user, err)
 		return nil, err
 	}
 
